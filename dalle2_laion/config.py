@@ -22,7 +22,7 @@ class File(BaseModel):
     cache_dir: Optional[Path] = None
     filename_override: Optional[str] = None
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, skip_on_failure=True)
     def add_default_checksum(cls, values):
         """
         When loading from url, the checksum is the best way to see if there is an update to the model.
