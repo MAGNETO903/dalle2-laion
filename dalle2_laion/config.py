@@ -160,7 +160,7 @@ class DecoderLoadConfig(BaseModel):
         """
         unet_numbers = []
         for value in values["unet_sources"]:
-            unet_numbers.extend(value.unet_numbers)
+            unet_numbers.extend(value["unet_numbers"])
         unet_numbers.sort()
         if len(unet_numbers) != len(set(unet_numbers)):
             raise ValidationError("The decoder unet numbers must not repeat.")
