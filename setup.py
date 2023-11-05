@@ -1,10 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name = "dalle2-laion",
     version = "0.0.1",
-    packages = find_packages(exclude=[]),
-    include_package_data = True,
+    packages = ["dalle2-laion"],
     install_requires = [
         "packaging>=21.0",
         "pydantic>=1.9.0",
