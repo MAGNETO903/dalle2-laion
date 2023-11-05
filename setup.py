@@ -9,7 +9,7 @@ setup(
         "packaging>=21.0",
         "pydantic>=1.9.0",
         "torch>=1.10",
-        "Pillow>=9.0.0",
+        "pillow>=9.0.0",
         "numpy>=1.20.0",
         "click>=8.0.0"
         "dalle2-pytorch"
