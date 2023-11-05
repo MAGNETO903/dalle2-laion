@@ -153,7 +153,7 @@ class DecoderLoadConfig(BaseModel):
         values["final_unet_number"] = final_unet_number
         return values
 
-    @root_validator
+    @root_validator(pre=True)
     def verify_unet_numbers_valid(cls, values):
         """
         The unets must go from 1 to some positive number not skipping any and not repeating any.
