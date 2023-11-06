@@ -40,7 +40,7 @@
             "load_type": "url",
             "path": "https://huggingface.co/laion/DALLE2-PyTorch/raw/main/prior/best.pth",
             "cache_dir": "./models",
-            "filename_override": "prior.pth"
+            "filename_override": "best.pth"
         },
         "load_config_from": {
             "load_type": "url",
