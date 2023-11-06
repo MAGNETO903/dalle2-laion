@@ -38,7 +38,7 @@
     "prior": {
         "load_model_from": {
             "load_type": "url",
-            "path": "https://huggingface.co/laion/DALLE2-PyTorch/raw/main/prior/best.pth",
+            "path": "https://huggingface.co/laion/DALLE2-PyTorch/resolve/main/prior/latest.pth",
             "cache_dir": "./models",
             "filename_override": "prior.pth"
         },
