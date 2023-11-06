@@ -54,6 +54,6 @@
         "model": "ViT-L/14"
     },
 
-    "devices": "cuda:1",
+    "devices": "cuda:0",
     "strict_loading": false
 }
