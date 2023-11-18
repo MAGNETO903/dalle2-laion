@@ -243,8 +243,9 @@ class DalleModelManager:
             true_decoder_config = DecoderConfig(**true_decoder_config_obj)
             decoder_data_requirements = self._get_decoder_data_requirements(true_decoder_config)
             decoder = true_decoder_config.create().eval()
+            print(true_unets)
             decoder.unets = nn.ModuleList(true_unets)
-            print(decoder.unets);
+            print(decoder.unets)
             decoder.to(torch.float32)
             return ModelInfo(decoder, decoder_version, requires_clip, decoder_data_requirements)
             
