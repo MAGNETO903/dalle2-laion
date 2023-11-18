@@ -238,11 +238,13 @@ class DalleModelManager:
                 true_decoder_config_obj['sample_timesteps'] = true_sample_timesteps
 
             # Now we can create the decoder and substitute the unets
+            print("INFO")
             print(true_decoder_config_obj)
             true_decoder_config = DecoderConfig(**true_decoder_config_obj)
             decoder_data_requirements = self._get_decoder_data_requirements(true_decoder_config)
             decoder = true_decoder_config.create().eval()
             decoder.unets = nn.ModuleList(true_unets)
+            print(decoder.unets);
             decoder.to(torch.float32)
             return ModelInfo(decoder, decoder_version, requires_clip, decoder_data_requirements)
             
