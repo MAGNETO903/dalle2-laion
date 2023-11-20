@@ -82,7 +82,7 @@ class DalleModelManager:
     """
     Used to load priors and decoders and to provide a simple interface to run general scripts against
     """
-    def __init__(self, model_load_config: ModelLoadConfig, check_updates: bool = True):
+    def __init__(self, model_load_config: ModelLoadConfig, check_updates: bool = True, lowres_cond_img = None):
         """
         Downloads the models and loads them into memory.
         If check_updates is True, then the models will be re-downloaded if checksums do not match.
@@ -96,7 +96,7 @@ class DalleModelManager:
         self.strict_loading = model_load_config.strict_loading
 
         if model_load_config.decoder is not None:
-            self.decoder_info = self.load_decoder(model_load_config.decoder)
+            self.decoder_info = self.load_decoder(model_load_config.decoder, lowres_cond_img = lowres_cond_img)
         else:
             self.decoder_info = None
 
@@ -130,12 +130,12 @@ class DalleModelManager:
             image_size=decoder_config.image_sizes[min_unet_number - 1]  # The input image size is the input to the first unet we are using
         )
 
-    def _load_single_decoder(self, load_config: SingleDecoderLoadConfig) -> Tuple[Decoder, DecoderConfig, Optional[version.Version], bool]:
+    def _load_single_decoder(self, load_config: SingleDecoderLoadConfig, lowres_cond_img=None) -> Tuple[Decoder, DecoderConfig, Optional[version.Version], bool]:
         """
         Loads a single decoder from a model and a config file
         """
         unet_sample_timesteps = load_config.default_sample_timesteps
-        def apply_default_config(config: DecoderConfig):
+        def apply_default_config(config: DecoderConfig, lowres_cond_img = lowres_cond_img):
             if unet_sample_timesteps is not None:
                 base_sample_timesteps = [None] * len(config.unets)
                 for unet_number, timesteps in zip(load_config.unet_numbers, unet_sample_timesteps):
@@ -162,7 +162,7 @@ class DalleModelManager:
                     # We don't want to load clip with the model
                     requires_clip = True
                     decoder_config.clip = None
-                decoder = decoder_config.create().eval()
+                decoder = decoder_config.create(lowres_cond_img = lowres_cond_img).eval()
                 decoder.load_state_dict(model_state_dict['model'], strict=self.strict_loading)  # If the model has a config included, then we know the model_state_dict['model'] is the actual model
             else:
                 # In this case, the state_dict is the model itself. This means we also must load the config from an external file
@@ -174,18 +174,18 @@ class DalleModelManager:
                         # We don't want to load clip with the model
                         requires_clip = True
                         decoder_config.clip = None
-                decoder = decoder_config.create().eval()
+                decoder = decoder_config.create(lowres_cond_img = lowres_cond_img).eval()
                 decoder.load_state_dict(model_state_dict, strict=self.strict_loading)
 
             return decoder, decoder_config, model_version, requires_clip
 
-    def load_decoder(self, load_config: DecoderLoadConfig) -> 'ModelInfo[Decoder]':
+    def load_decoder(self, load_config: DecoderLoadConfig, lowres_cond_img = None) -> 'ModelInfo[Decoder]':
         """
         Loads a decoder from a model and a config file
         """
         if len(load_config.unet_sources) == 1:
             # Then we are loading only one model
-            decoder, decoder_config, decoder_version, requires_clip = self._load_single_decoder(load_config.unet_sources[0])
+            decoder, decoder_config, decoder_version, requires_clip = self._load_single_decoder(load_config.unet_sources[0], lowres_cond_img = lowres_cond_img)
             decoder_data_requirements = self._get_decoder_data_requirements(decoder_config)
             decoder.to(torch.float32)
             return ModelInfo(decoder, decoder_version, requires_clip, decoder_data_requirements)
@@ -200,7 +200,7 @@ class DalleModelManager:
 
             requires_clip = False
             for source in load_config.unet_sources:
-                decoder, decoder_config, decoder_version, unets_requires_clip = self._load_single_decoder(source)
+                decoder, decoder_config, decoder_version, unets_requires_clip = self._load_single_decoder(source, lowres_cond_img = lowres_cond_img)
                 if unets_requires_clip:
                     requires_clip = True
                 if source.default_sample_timesteps is not None:
@@ -242,7 +242,7 @@ class DalleModelManager:
             print(true_decoder_config_obj)
             true_decoder_config = DecoderConfig(**true_decoder_config_obj)
             decoder_data_requirements = self._get_decoder_data_requirements(true_decoder_config)
-            decoder = true_decoder_config.create().eval()
+            decoder = true_decoder_config.create(lowres_cond_img = lowres_cond_img).eval()
             print(true_unets)
             decoder.unets = nn.ModuleList(true_unets)
             print(decoder.unets)
