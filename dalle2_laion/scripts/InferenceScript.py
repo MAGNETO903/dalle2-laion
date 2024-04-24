@@ -159,6 +159,10 @@ class InferenceScript:
         self,
         images: List[PILImage.Image] = None, image_embed: List[torch.Tensor] = None,
         text: List[str] = None, text_encoding: List[torch.Tensor] = None,
+        ### HW CODE START ###
+        src_lowres_img = None,
+        src_highres_img = None,
+        ### HW CODE END ###
         inpaint_images: List[PILImage.Image] = None, inpaint_image_masks: List[torch.Tensor] = None,
         cond_scale: float = None, sample_count: int = 1, batch_size: int = 10,
     ):
@@ -211,6 +215,10 @@ class InferenceScript:
         with self._decoder_in_gpu() as decoder:
             for i in range(len(image_embeddings)):
                 args = {}
+                ### HW CODE START ###
+                args['src_lowres_img'] = src_lowres_img
+                args['src_highres_img'] = src_highres_img
+                ### HW CODE END ###
                 embeddings_map = []
                 if data_requirements.image_embedding:
                     args["image_embed"] = image_embeddings[i].to(self.device)
